@@ -16,7 +16,6 @@ public class SchedulerProducer {
     private volatile RabbitTemplate rabbitTemplate;
 
     private final AtomicInteger counter = new AtomicInteger();
-    public static final String LDE_QUEUE_NAME = "lde";
     public static final String NOTIFICATIONS_QUEUE_NAME = "notifications";
 
     @Scheduled(fixedRate = 300000)
@@ -26,7 +25,7 @@ public class SchedulerProducer {
                 .author(counter.incrementAndGet() + "")
                 .employeeId(1L)
                 .build();
-        rabbitTemplate.convertAndSend("", NOTIFICATIONS_QUEUE_NAME, m);
+        //rabbitTemplate.convertAndSend("", NOTIFICATIONS_QUEUE_NAME, m);
     }
 
 }

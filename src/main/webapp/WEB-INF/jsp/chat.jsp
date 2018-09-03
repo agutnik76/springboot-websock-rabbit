@@ -10,6 +10,7 @@
 <div>
     <div>
         <button id="connect" onclick="webSocket.connect();">Connect</button>
+        <button id="connect2" onclick="webSocket.connect2();">Connect 2</button>
         <button id="disconnect" disabled="disabled" onclick="webSocket.disconnect();">
             Disconnect
         </button>
@@ -19,6 +20,7 @@
         <input type="text" id="text" placeholder="Write a message..."/>
         <button id="sendMessage" onclick="webSocket.sendMessage();">Send</button>
         <p id="response"></p>
+        <p style="color: red" id="user_response"></p>
     </div>
 </div>
 </body>

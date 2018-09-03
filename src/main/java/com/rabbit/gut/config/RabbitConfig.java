@@ -157,6 +157,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
                                     .collect(Collectors.joining())
                     );
                 }
+
                 return super.createListenerContainer(endpoint);
             }
         };
