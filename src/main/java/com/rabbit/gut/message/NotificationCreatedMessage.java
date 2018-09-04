@@ -5,10 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
-
 /**
- * Dto для отправки уведомления о новом оповещении")
+ * Dto для отправки уведомления о новом сообщении")
  */
 @Data
 @Builder
@@ -35,14 +33,4 @@ public class NotificationCreatedMessage {
      * Фио отправителя уведомления (Автора задачи)
      */
     private String author;
-
-    /**
-     * Предельный срок задачи по которой сформированно уведомление
-     */
-    private ZonedDateTime date;
-
-    /**
-     * Идентификатор нотификации для перехода
-     */
-    private Long notificationId;
 }

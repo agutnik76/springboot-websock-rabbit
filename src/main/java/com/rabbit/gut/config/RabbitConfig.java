@@ -7,7 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -16,15 +15,12 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.*;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -38,29 +34,15 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     private String USERNAME;
     @Value("${spring.rabbitmq.password}")
     private String PASSWORD;
-
+    @Value("${spring.profiles.active:}")
+    private String ACTIVE_PROFILE;
     /**
-     * Очередь для событий от редактора Luxsoft
-     */
-    public static final String LDE_QUEUE_NAME = "lde";
-    /**
-     * Очередь для уведомлений
+     * Notifications queue
      */
     public static final String NOTIFICATIONS_QUEUE_NAME = "notifications";
 
     /**
-     * Очередь для событий редактора Luxsoft
-     */
-    @Bean
-    public Queue ldeQueue() {
-        return new Queue(getFullQueueName(LDE_QUEUE_NAME),
-                true,
-                false,
-                false);
-    }
-
-    /**
-     * Очередь для уведомлений
+     * Users notifications queue
      */
     @Bean
     public Queue notificationsQueue() {
@@ -71,7 +53,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     /**
-     * Настройка подключения к RabbitMQ
+     * RabbitMQ connections settings
      */
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -83,15 +65,14 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     /**
-     * Устанавливаем messageConverter для конвертации сообщений в json при записи в очередь
-     * И пререопределяем метод отправки сообщений для добавления названия проиля к названию очереди
+     * sets messageConverter to write to queue in json format
+     * overrides send - just in case, for future use
      */
     @Bean
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory()) {
             @Override
             public void send(String exchange, String routingKey, Message message, CorrelationData correlationData) throws AmqpException {
-                routingKey = getFullQueueName(routingKey);
                 super.send(exchange, routingKey, message, correlationData);
             }
         };
@@ -103,7 +84,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     /**
-     * Создаем objectMapper и настраиваем сериализацию даты и времени.
+     * objectMapper and date serialization
      */
     @Bean
     public ObjectMapper objectMapper() {
@@ -115,7 +96,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     /**
-     * Устанавливаем messageHandler для чтения из json
+     * sets messageHandler for listeners to read json
      */
     @Override
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar rabbitListenerEndpointRegistrar) {
@@ -123,7 +104,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     /**
-     * Создаем обработчик сообщений с созданным ранее конвертером из json
+     * creates messagehandler with json converter
      */
     @Bean
     public DefaultMessageHandlerMethodFactory messageHandlerMethodFactory() {
@@ -133,7 +114,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     /**
-     * Конвертер для чтения сообщений в формате json
+     * json converter
      */
     private MappingJackson2MessageConverter consumerJackson2MessageConverter() {
         MappingJackson2MessageConverter mappingJackson2MessageConverter = new MappingJackson2MessageConverter();
@@ -142,7 +123,7 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     /**
-     * Переопределяем бин, создающий RabbitListener'ы для добавления имени активного профиля к названию очереди
+     * add profile name if exists to endpoints names
      */
     @Bean
     public RabbitListenerContainerFactory rabbitListenerContainerFactory() {
@@ -166,6 +147,6 @@ public class RabbitConfig implements RabbitListenerConfigurer {
     }
 
     private String getFullQueueName(String name) {
-            return name;
+        return !ACTIVE_PROFILE.isEmpty() ? name + '-' + ACTIVE_PROFILE : name;
     }
 }

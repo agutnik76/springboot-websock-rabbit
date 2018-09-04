@@ -12,10 +12,6 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
-import java.util.Map;
-import java.util.Optional;
-
 @Component
 @Slf4j
 public class NotificationQueueListener {
@@ -28,20 +24,16 @@ public class NotificationQueueListener {
     }
 
     /**
-     * Обработчки сообщений.
-     * Пока что просто отправляет уведомление на фронт.
+     * message handler, forwards message from queue to frontend client
      */
     @RabbitListener(queues = {RabbitConfig.NOTIFICATIONS_QUEUE_NAME})
-    public void processNewNotificationEvent(@Payload NotificationCreatedMessage notification,
-                                            SimpMessageHeaderAccessor headerAccessor) {
+    public void processNewNotificationEvent(@Payload NotificationCreatedMessage notification) {
         log.info("Получено сообщение из очереди {} контент: {}", RabbitConfig.NOTIFICATIONS_QUEUE_NAME, notification.toString());
         SimpMessageHeaderAccessor ha = SimpMessageHeaderAccessor
                 .create(SimpMessageType.MESSAGE);
         ha.setSessionId(notification.getEmployeeId().toString());
         ha.setLeaveMutable(true);
-//        template.convertAndSendToUser(notification.getEmployeeId().toString(), "/topic/stam",
-//                notification, ha.getMessageHeaders());
-        template.convertAndSendToUser(notification.getEmployeeId().toString(), "/topic/stam",
+        template.convertAndSendToUser(notification.getEmployeeId().toString(), StompConfig.NOTIFICATIONS_TO_USER,
                 notification);
     }
 }

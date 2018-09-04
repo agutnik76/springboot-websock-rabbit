@@ -10,8 +10,7 @@ class ChatController {
         this.setConnected(true);
         console.log('Connected: ' + frame);
         this.stompClient.subscribe('/topic/notifications', this.showMessage);
-        this.stompClient.subscribe('/user/topic/stam', this.showUser);
-        //this.stompClient.subscribe('/user/notifications', this.showUser);
+        this.stompClient.subscribe('/user/topic/personal', this.showUser);
     }
 
     setConnected(connected) {
@@ -22,7 +21,6 @@ class ChatController {
     }
 
     connect() {
-        //var socket = new SockJS('/socket/sockJs');
         let params = new URL(window.location).searchParams;
         this.userId = params.get('user');
         var socket = new SockJS(this.getConnectionUrl(this.userId));
@@ -60,7 +58,6 @@ class ChatController {
     }
     getConnectionUrl(username) {
         return `http://${username}@${window.location.host}${this.ENTRY_POINT_URL}`;
-        //return `http://${window.location.host}${this.ENTRY_POINT_URL}`;
     }
 }
 var webSocket = new ChatController();

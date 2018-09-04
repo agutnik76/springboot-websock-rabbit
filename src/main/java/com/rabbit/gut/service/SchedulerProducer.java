@@ -2,7 +2,6 @@ package com.rabbit.gut.service;
 
 import com.rabbit.gut.message.NotificationCreatedMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +17,9 @@ public class SchedulerProducer {
     private final AtomicInteger counter = new AtomicInteger();
     public static final String NOTIFICATIONS_QUEUE_NAME = "notifications";
 
+    /**
+     * for tests
+     */
     @Scheduled(fixedRate = 300000)
     public void sendMessage() {
         NotificationCreatedMessage m = NotificationCreatedMessage
@@ -25,7 +27,7 @@ public class SchedulerProducer {
                 .author(counter.incrementAndGet() + "")
                 .employeeId(1L)
                 .build();
-        //rabbitTemplate.convertAndSend("", NOTIFICATIONS_QUEUE_NAME, m);
+        //rabbitTemplate.convertAndSend(m.getEmployeeId().toString(), NOTIFICATIONS_QUEUE_NAME, m);
     }
 
 }

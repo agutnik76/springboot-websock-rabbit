@@ -7,19 +7,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
- * Сервис для авторизации любых пользователей без пароля.
+ * Service to authenticate all users without password.
  */
 @Service
 public class AuthEveryoneUserAuthServiceImpl implements UserDetailsService {
     /**
-     * Поииск пользователя.
+     * simple user authentication .
      *
-     * @param username - Имя пользователя.
-     * @return Информация о пользователе.
+     * @param username
+     * @return user details
      */
     @Override
     public UserDetails loadUserByUsername(String username) {

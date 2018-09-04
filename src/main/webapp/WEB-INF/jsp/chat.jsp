@@ -10,7 +10,6 @@
 <div>
     <div>
         <button id="connect" onclick="webSocket.connect();">Connect</button>
-        <button id="connect2" onclick="webSocket.connect2();">Connect 2</button>
         <button id="disconnect" disabled="disabled" onclick="webSocket.disconnect();">
             Disconnect
         </button>
