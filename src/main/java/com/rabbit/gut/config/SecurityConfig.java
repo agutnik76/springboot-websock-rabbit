@@ -45,7 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().cors().and()
+        http.csrf()
+                .configure(http);//disable()
+                http.cors().and()
                 .authorizeRequests()
                 // Точка для подключения клиентов должна быть доступна всем
                 .antMatchers("/socket/sockJs/info*").permitAll()
