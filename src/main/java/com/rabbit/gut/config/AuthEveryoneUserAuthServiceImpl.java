@@ -11,7 +11,7 @@ import java.util.Arrays;
 /**
  * Service to authenticate all users without password.
  */
-@Service
+@Service(value = "secdetails")
 public class AuthEveryoneUserAuthServiceImpl implements UserDetailsService {
     /**
      * simple user authentication .
